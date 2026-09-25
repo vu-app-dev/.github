@@ -1,9 +1,8 @@
 <div align="center">
-  <img src="https://raw.githubusercontent.com/vu-app-dev/vu-frontend/main/public/vu.svg" alt="VU logo" width="96" />
 
 # VU
 
-### AI-powered virtual interviews, from application to evidence-backed review
+### AI-powered interviews platform
 
 [![Live app](https://img.shields.io/badge/Live_App-vuapp.dev-ff5d31?style=for-the-badge)](https://vuapp.dev/)
 [![Watch the demo](https://img.shields.io/badge/Watch_Demo-Google_Drive-4285F4?style=for-the-badge&logo=googledrive&logoColor=white)](https://drive.google.com/file/d/1JCtI74opyT0ndqJkITZ2ndIOklS3-ABd/view)
