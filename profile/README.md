@@ -1,71 +1,96 @@
-# VU — AI-Powered Virtual Interview Platform
+<div align="center">
+  <img src="https://raw.githubusercontent.com/vu-app-dev/vu-frontend/main/public/vu.svg" alt="VU logo" width="96" />
 
-<p align="center">
-  <strong>Real-time AI interviews with BARS-anchored scoring, multi-modal cheat detection, and automated performance reports.</strong>
-</p>
+# VU
 
----
+### AI-powered virtual interviews, from application to evidence-backed review
 
-## What is VU?
+[![Live app](https://img.shields.io/badge/Live_App-vuapp.dev-ff5d31?style=for-the-badge)](https://vuapp.dev/)
+[![Watch the demo](https://img.shields.io/badge/Watch_Demo-Google_Drive-4285F4?style=for-the-badge&logo=googledrive&logoColor=white)](https://drive.google.com/file/d/1JCtI74opyT0ndqJkITZ2ndIOklS3-ABd/view)
+[![Start locally](https://img.shields.io/badge/Start_Locally-vu--app-181717?style=for-the-badge&logo=github)](https://github.com/vu-app-dev/vu-app)
 
-VU is a graduation project that conducts fully automated AI-driven job interviews. A candidate speaks to an AI interviewer in real time — the system transcribes their speech, evaluates their answers using BARS (Behaviorally Anchored Rating Scales), analyzes their voice for confidence, tracks their face and gaze via webcam, and detects cheating through 5 independent signals. At the end, the recruiter receives a complete performance report with sub-scores, per-question feedback, an overall summary, and an integrity label.
+VU is a graduation project that helps hiring teams configure interviews, assess candidates consistently, and review structured evidence in one workspace.
+</div>
 
-### Key Capabilities
+## The platform
 
-- **Real-time voice interviews** — dual WebSocket (STT + interview control) with edge-tts AI voice
-- **BARS-anchored scoring** — 5 LLM-scored dimensions (1-5 scale with behavioral anchors)
-- **Multi-modal assessment** — transcript analysis + audio confidence + video face/gaze tracking
-- **Cheat detection** — 5 signals: tab switches, no face, multiple faces, gaze away, second speaker (diarization)
-- **CV analysis** — 4 BARS dimensions scored from PDF/DOCX, skills extracted for question tailoring
-- **Adaptive questioning** — difficulty-aware question count, topic diversity, LLM-driven follow-ups
-- **Pluggable LLM** — switch between Gemini and Groq with one environment variable
+VU connects the complete interview workflow:
+
+1. **Recruiters configure the role** — create jobs, reusable interview mocks, evaluation criteria, and public application links.
+2. **Candidates apply and prepare** — submit their details and CV, then complete browser, microphone, and camera checks.
+3. **The AI conducts the interview** — transcribes speech, generates adaptive questions, speaks through text-to-speech, and evaluates active competencies.
+4. **The system assembles the evidence** — combines transcript, audio, video, CV, and session-integrity signals.
+5. **Recruiters review the result** — inspect dimension scores, per-question feedback, summaries, recordings, and integrity status.
+
+### What makes VU different
+
+- **Behaviorally anchored scoring** across technical ability, communication, problem solving, structured thinking, and confidence.
+- **Adaptive interview flow** with role-aware questions, controlled follow-ups, and CV-informed context.
+- **Multi-modal evidence** from answers, speech patterns, face presence, gaze, and browser visibility events.
+- **Separate competence and integrity signals** so suspicious-session indicators do not silently rewrite a candidate's score.
+- **Two hiring workflows** for managed job applications and reusable mock interviews.
+- **End-to-end recruiter workspace** for jobs, candidates, teams, permissions, and interview review.
 
 ## Architecture
 
+```mermaid
+flowchart LR
+    Candidate([Candidate]) --> Web[React frontend]
+    Recruiter([Recruiter]) --> Web
+    Web <-->|REST + WebSocket| AI[FastAPI AI service]
+    Web <-->|REST + JWT| API[NestJS backend]
+    AI -->|API key| API
+    API <--> DB[(PostgreSQL)]
+    AI --> LLM[Gemini or Groq]
+    AI --> STT[AssemblyAI]
+    AI --> Media[edge-tts + OpenCV/YuNet]
 ```
-Frontend (React)  ←→  AI Service (FastAPI)  ←→  Backend (NestJS)  ←→  PostgreSQL
-                         ├─ STT (AssemblyAI)
-                         ├─ LLM (Gemini / Groq)
-                         ├─ TTS (edge-tts)
-                         ├─ Video (OpenCV + YuNet)
-                         └─ Scoring (BARS + cheat detection)
-```
+
+| Layer | Core technologies |
+| --- | --- |
+| Web application | React 19, Vite 7, React Router, Recharts |
+| Application API | NestJS 11, TypeORM, PostgreSQL, JWT |
+| Interview intelligence | FastAPI, Gemini/Groq, AssemblyAI, edge-tts, OpenCV + YuNet |
+| Local orchestration | Docker Compose |
 
 ## Repositories
 
-| Repo | Description |
-|------|-------------|
-| [vu-app](https://github.com/vu-app-dev/vu-app) | **Start here** — full-stack deployment with Docker Compose, nginx, docs |
-| [vu-ai](https://github.com/vu-app-dev/vu-ai) | AI service (FastAPI, Python) — scoring, STT, TTS, cheat detection |
-| [vu-backend](https://github.com/vu-app-dev/vu-backend) | Backend API (NestJS, TypeORM, PostgreSQL) |
-| [vu-frontend](https://github.com/vu-app-dev/vu-frontend) | Frontend (React 19, Vite 7, Tailwind) |
+| Repository | Responsibility |
+| --- | --- |
+| [`vu-app`](https://github.com/vu-app-dev/vu-app) | **Start here.** Full-stack Docker Compose orchestration and architecture documentation. |
+| [`vu-frontend`](https://github.com/vu-app-dev/vu-frontend) | Recruiter dashboard, public application journey, and live interview experience. |
+| [`vu-backend`](https://github.com/vu-app-dev/vu-backend) | Authentication, companies, jobs, mocks, candidates, files, and result persistence. |
+| [`vu-ai`](https://github.com/vu-app-dev/vu-ai) | Interview sessions, STT/TTS, question generation, scoring, CV analysis, and integrity signals. |
 
-## Quick Start
+## Run VU locally
+
+### Prerequisites
+
+- Git
+- Docker 24+ with Docker Compose v2
+- A Gemini or Groq API key
+- An AssemblyAI API key
 
 ```bash
 git clone --recursive https://github.com/vu-app-dev/vu-app.git
 cd vu-app
-cp .env.example .env   # fill in API keys
-docker compose -f compose.yml -f compose.dev.yml up --build
+cp .env.example .env
+# Add your LLM and AssemblyAI credentials to .env
+docker compose up --build
 ```
 
- → Frontend at `http://localhost:5173`, Backend at `:3000`, AI at `:8000`
+Once the containers are ready:
 
-## Tech Stack
+- Web app: [http://localhost:5173](http://localhost:5173)
+- Backend API: [http://localhost:3000](http://localhost:3000)
+- Swagger UI: [http://localhost:3000/docs](http://localhost:3000/docs)
+- AI service health: [http://localhost:8000/health](http://localhost:8000/health)
 
-| Layer | Technology |
-|-------|-----------|
-| Frontend | React 19, Vite 7, Tailwind CSS 4, Recharts |
-| Backend | NestJS 11, TypeORM, PostgreSQL 16, JWT |
-| AI Service | FastAPI, Gemini/Groq, AssemblyAI, edge-tts, OpenCV+YuNet |
-| Deployment | Docker Compose, nginx, Let's Encrypt |
+Read the [system architecture](https://github.com/vu-app-dev/vu-app/blob/main/docs/architecture.md) and [AI scoring model](https://github.com/vu-app-dev/vu-app/blob/main/docs/ai-scoring.md) for the deeper technical design.
 
-## Documentation
+> [!IMPORTANT]
+> VU provides decision support, not an autonomous hiring decision. Interview scores and integrity indicators should be reviewed by a person and interpreted alongside the full candidate context.
 
-- [Architecture](https://github.com/vu-app-dev/vu-app/blob/main/docs/architecture.md) — system design, request flow, data model
-- [AI Scoring](https://github.com/vu-app-dev/vu-app/blob/main/docs/ai-scoring.md) — BARS dimensions, cheat detection, LLM config
-- [Deployment](https://github.com/vu-app-dev/vu-app/blob/main/docs/deployment.md) — VPS setup, DNS, SSL, backups
-
-## License
-
-MIT
+<p align="center">
+  Built as a graduation project · <a href="https://github.com/vu-app-dev/vu-app/blob/main/LICENSE">MIT licensed</a>
+</p>
